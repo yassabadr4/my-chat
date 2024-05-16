@@ -22,20 +22,26 @@ class CustomTextFormField extends StatefulWidget {
 
 class _CustomTextFormFieldState extends State<CustomTextFormField> {
   bool obscure = true;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: TextFormField(
+        validator: (value) => value!.isEmpty ? 'This Field is Required' : null,
         controller: widget.controller,
-        obscureText:widget.isPass ? obscure : false,
+        obscureText: widget.isPass ? obscure : false,
         decoration: InputDecoration(
           suffixIcon: widget.isPass
-              ? IconButton(onPressed: () {
-                setState(() {
-                  obscure = !obscure;
-                });
-          }, icon: const Icon(Iconsax.eye))
+              ? IconButton(
+                  onPressed: () {
+                    setState(() {
+                      obscure = !obscure;
+                    });
+                  },
+                  icon: obscure
+                      ? const Icon(Iconsax.eye_slash_copy)
+                      : const Icon(Iconsax.eye))
               : const SizedBox(),
           contentPadding: const EdgeInsets.all(16),
           focusedBorder: OutlineInputBorder(
