@@ -1,16 +1,17 @@
-import 'package:chat_app_material3/screens/chat/widgets/chat_message_card.dart';
+import 'package:chat_app_material3/screens/group/group_member.dart';
+import 'package:chat_app_material3/screens/group/widgets/group_message_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 
-class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+class GroupScreen extends StatefulWidget {
+  const GroupScreen({super.key});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<GroupScreen> createState() => _GroupScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _GroupScreenState extends State<GroupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,14 +21,16 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             const Text('Name'),
             Text(
-              'Last Seen 11:00 am',
+              'member 1, member 2, member 3,...',
               style: Theme.of(context).textTheme.labelMedium,
             )
           ],
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Iconsax.trash_copy)),
-          IconButton(onPressed: () {}, icon: const Icon(Iconsax.copy_copy)),
+          IconButton(onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const GroupMember(),));
+          }, icon: const Icon(Iconsax.user_square_copy)),
+         // IconButton(onPressed: () {}, icon: const Icon(Iconsax.copy_copy)),
         ],
       ),
       body: Padding(
@@ -35,39 +38,39 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             Expanded(
-              // child: ListView.builder(
-              //   itemCount: 6,
-              //   reverse: true,
-              //   itemBuilder: (context, index) {
-              //     return ChatMessageCard(
-              //       index: index,
-              //     );
-              //   },
-              // ),
-              child: Center(
-                child: GestureDetector(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '👋',
-                            style: Theme.of(context).textTheme.displayMedium,
-                          ),
-                          SizedBox(height: 16.h,),
-                          Text(
-                            'Say Hello',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              child: ListView.builder(
+                itemCount: 6,
+                reverse: true,
+                itemBuilder: (context, index) {
+                  return GroupMessageCard(
+                    index: index,
+                  );
+                },
               ),
+              // child: Center(
+              //   child: GestureDetector(
+              //     child: Card(
+              //       child: Padding(
+              //         padding: const EdgeInsets.all(12.0),
+              //         child: Column(
+              //           mainAxisSize: MainAxisSize.min,
+              //           mainAxisAlignment: MainAxisAlignment.center,
+              //           children: [
+              //             Text(
+              //               '👋',
+              //               style: Theme.of(context).textTheme.displayMedium,
+              //             ),
+              //             SizedBox(height: 16.h,),
+              //             Text(
+              //               'Say Hello',
+              //               style: Theme.of(context).textTheme.bodyLarge,
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ),
             Row(
               children: [
