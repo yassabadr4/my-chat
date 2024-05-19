@@ -1,6 +1,7 @@
 import 'package:chat_app_material3/utils/colors.dart';
 import 'package:chat_app_material3/widgets/custom_text_field.dart';
 import 'package:chat_app_material3/widgets/logo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -31,7 +32,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 'Forget Password',
                 style: Theme.of(context).textTheme.headlineLarge,
               ),
-               SizedBox(
+              SizedBox(
                 height: 20.h,
               ),
               Text(
@@ -43,13 +44,36 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 controller: emailController,
                 icon: Iconsax.direct,
               ),
-               SizedBox(
+              SizedBox(
                 height: 16.h,
               ),
-
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
+                onPressed: () async {
+                  await FirebaseAuth.instance
+                      .sendPasswordResetEmail(email: emailController.text)
+                      .then(
+                        (value) {
+                          Navigator.pop(context);
+                          return ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Check your Email',
+                              ),
+                            ),
+                          );
+                        }
+                      )
+                      .onError(
+                        (error, stackTrace) =>
+                            ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              error.toString(),
+                            ),
+                          ),
+                        ),
+                      );
+
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPrimaryColor,
@@ -65,7 +89,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   ),
                 ),
               ),
-               SizedBox(
+              SizedBox(
                 height: 16.h,
               ),
             ],

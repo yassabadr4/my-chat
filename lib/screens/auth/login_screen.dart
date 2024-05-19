@@ -3,6 +3,7 @@ import 'package:chat_app_material3/screens/auth/setup_profile.dart';
 import 'package:chat_app_material3/utils/colors.dart';
 import 'package:chat_app_material3/widgets/custom_text_field.dart';
 import 'package:chat_app_material3/widgets/logo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -31,14 +32,20 @@ class _LoginScreenState extends State<LoginScreen> {
               const AppLogo(),
               Text(
                 'Welcom Back',
-                style: Theme.of(context).textTheme.headlineLarge,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .headlineLarge,
               ),
               const SizedBox(
                 height: 20,
               ),
               Text(
                 'Let\'s Chat :)',
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .bodyMedium,
               ),
               Form(
                 key: formKey,
@@ -55,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       icon: Iconsax.password_check,
                       isPass: true,
                     ),
-                     SizedBox(
+                    SizedBox(
                       height: 16.h,
                     ),
                     Row(
@@ -67,18 +74,32 @@ class _LoginScreenState extends State<LoginScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        const ForgetPasswordScreen(),
+                                    const ForgetPasswordScreen(),
                                   ));
                             },
                             child: const Text('Forget Password?')),
                       ],
                     ),
-                     SizedBox(
+                    SizedBox(
                       height: 16.h,
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        if(formKey.currentState!.validate()){
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          await FirebaseAuth.instance
+                              .signInWithEmailAndPassword(
+                              email: emailController.text,
+                              password: passwordController.text).then((value) =>
+                              print('login done')).onError(
+                                (error, stackTrace) =>
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      error.toString(),
+                                    ),
+                                  ),
+                                ),
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -95,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(
+                    SizedBox(
                       height: 16,
                     ),
                     OutlinedButton(
@@ -105,19 +126,37 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SetupProfile(),
-                            ),
-                            (route) => false);
+                      onPressed: () async {
+                        // Navigator.pushAndRemoveUntil(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder: (context) => const SetupProfile(),
+                        //     ),
+                        //     (route) => false);
+                        await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passwordController.text)
+                            .then((value) => print('done'))
+                            .onError(
+                              (error, stackTrace) =>
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    error.toString(),
+                                  ),
+                                ),
+                              ),
+                        );
                       },
                       child: Center(
                         child: Text(
                           'Create account'.toUpperCase(),
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface),
+                              color: Theme
+                                  .of(context)
+                                  .colorScheme
+                                  .onSurface),
                         ),
                       ),
                     ),

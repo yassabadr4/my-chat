@@ -43,13 +43,11 @@ class _GroupEditState extends State<GroupEdit> {
                         radius: 40,
                       ),
                       Positioned(
-                        top: 20,
-                        bottom: 20,
-                        right: 18,
-                        left: 20,
+                        bottom: -20,
+                        right: -20,
                         child: IconButton(
                           onPressed: () {},
-                          icon: const Icon(Icons.add_a_photo),
+                          icon:  IconButton.outlined(onPressed: (){},icon:Icon(Iconsax.edit_copy)),
                         ),
                       ),
                     ],

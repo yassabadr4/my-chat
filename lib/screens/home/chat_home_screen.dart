@@ -27,9 +27,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                     Icon(
                       Iconsax.minus_copy,
-                      size: 60,
+                      size: 60.sp,
                     ),
                     Row(
                       children: [
