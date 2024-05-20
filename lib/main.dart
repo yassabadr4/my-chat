@@ -1,12 +1,13 @@
 import 'package:chat_app_material3/firebase_options.dart';
 import 'package:chat_app_material3/screens/auth/login_screen.dart';
+import 'package:chat_app_material3/screens/auth/setup_profile.dart';
 import 'package:chat_app_material3/widgets/layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-void main()async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -28,21 +29,31 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
           // This is the theme of your application.
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo,brightness: Brightness.light),
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.indigo, brightness: Brightness.light),
           useMaterial3: true,
         ),
         themeMode: ThemeMode.system,
         darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green,brightness: Brightness.dark),
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.green, brightness: Brightness.dark),
         ),
         debugShowCheckedModeBanner: false,
-        home: StreamBuilder(stream: FirebaseAuth.instance.userChanges(), builder: (context, snapshot) {
-          if(snapshot.hasData){
-            return LayoutApp();
-          }else{
-            return LoginScreen();
-          }
-        },),
+        home: StreamBuilder(
+          stream: FirebaseAuth.instance.userChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (FirebaseAuth.instance.currentUser!.displayName == '' ||
+                  FirebaseAuth.instance.currentUser!.displayName == null) {
+                return const SetupProfile();
+              } else {
+                return const LayoutApp();
+              }
+            } else {
+              return const LoginScreen();
+            }
+          },
+        ),
       ),
     );
   }

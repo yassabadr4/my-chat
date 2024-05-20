@@ -1,3 +1,4 @@
+import 'package:chat_app_material3/firebase/fire_auth.dart';
 import 'package:chat_app_material3/screens/auth/forget_password_screen.dart';
 import 'package:chat_app_material3/screens/auth/setup_profile.dart';
 import 'package:chat_app_material3/utils/colors.dart';
@@ -137,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             .createUserWithEmailAndPassword(
                             email: emailController.text,
                             password: passwordController.text)
-                            .then((value) => print('done'))
+                            .then((value) => print('ok'))
                             .onError(
                               (error, stackTrace) =>
                               ScaffoldMessenger.of(context).showSnackBar(
