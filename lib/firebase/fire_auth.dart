@@ -29,7 +29,7 @@ class FireAuth {
 /// class
 /// firebase auth
 /// firebase store cloud store
-/// object User from firebase
+/// object User from firebase auth
 /// method from my model
 /// await firebaseFirestore.collection('users').doc(user.uid).set(chatUser.toJson());
 
