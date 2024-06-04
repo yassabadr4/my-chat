@@ -13,18 +13,19 @@ class FireAuth {
       id: user.uid,
       name: user.displayName ?? '',
       email: user.email ?? '',
-      createdAt: DateTime.now().toString(),
-      lastActivated: DateTime.now().toString(),
+      createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
+      lastActivated: DateTime.now().millisecondsSinceEpoch.toString(),
       pushToken: '',
       about: 'Hello i\'m User on the Chat',
       image: '',
       online: false,
     );
-    await firebaseFirestore.collection('users').doc(user.uid).set(chatUser.toJson());
+    await firebaseFirestore
+        .collection('users')
+        .doc(user.uid)
+        .set(chatUser.toJson());
   }
 }
-
-
 
 /// class
 /// firebase auth

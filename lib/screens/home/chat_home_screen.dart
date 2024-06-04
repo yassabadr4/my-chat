@@ -1,6 +1,9 @@
 import 'package:chat_app_material3/firebase/fire_database.dart';
+import 'package:chat_app_material3/models/room_model.dart';
 import 'package:chat_app_material3/screens/chat/widgets/chat_card.dart';
 import 'package:chat_app_material3/widgets/custom_text_field.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -28,7 +31,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                     Icon(
+                    Icon(
                       Iconsax.minus_copy,
                       size: 60.sp,
                     ),
@@ -49,25 +52,28 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                       icon: Iconsax.direct_copy,
                       label: 'Email',
                     ),
-                    SizedBox(height: 16.h,),
+                    SizedBox(
+                      height: 16.h,
+                    ),
                     ElevatedButton(
                       onPressed: () {
-                        if(emailController.text.isNotEmpty) {
-                          FireData().createRoom(emailController.text).then((value){
+                        if (emailController.text.isNotEmpty) {
+                          FireData()
+                              .createRoom(emailController.text)
+                              .then((value) {
                             setState(() {
-                              emailController.text= '';
+                              emailController.text = '';
                             });
                             Navigator.pop(context);
                           });
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)
-                        ),
-                        backgroundColor: Theme.of(context).colorScheme.primaryContainer
-                      ),
+                          padding: const EdgeInsets.all(16),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primaryContainer),
                       child: const Center(
                         child: Text('Create Chat'),
                       ),
@@ -88,10 +94,31 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return const ChatCard();
+              child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('rooms')
+                      .where('members',
+                          arrayContains: FirebaseAuth.instance.currentUser!.uid)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<ChatRoom> items = snapshot.data!.docs
+                          .map((e) => ChatRoom.fromJson(e.data()))
+                          .toList()
+                        ..sort(
+                          (a, b) =>
+                              b.lastMessageTime!.compareTo(a.lastMessageTime!),
+                        );
+                      return ListView.builder(
+                          itemCount: items.length,
+                          itemBuilder: (context, index) {
+                            return ChatCard(item: items[index],);
+                          });
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
                   }),
             ),
           ],

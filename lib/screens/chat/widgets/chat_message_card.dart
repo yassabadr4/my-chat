@@ -1,34 +1,39 @@
+import 'package:chat_app_material3/models/message_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:intl/intl.dart';
 
 class ChatMessageCard extends StatelessWidget {
   const ChatMessageCard({
     super.key,
     required this.index,
+    required this.messageItem,
   });
 
   final int index;
+  final MessageModel messageItem;
 
   @override
   Widget build(BuildContext context) {
+    bool isMe = messageItem.fromId == FirebaseAuth.instance.currentUser!.uid;
     return Row(
-      mainAxisAlignment:
-          index % 2 == 0 ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        index % 2 == 0
+        isMe
             ? IconButton(
                 onPressed: () {}, icon: const Icon(Iconsax.message_edit_copy))
             : const SizedBox(),
         Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(index % 2 == 0 ? 16 : 0),
-                bottomRight: Radius.circular(index % 2 == 0 ? 0 : 16),
+                bottomLeft: Radius.circular(isMe ? 16 : 0),
+                bottomRight: Radius.circular(isMe ? 0 : 16),
                 topRight: Radius.circular(16.r),
                 topLeft: Radius.circular(16.r)),
           ),
-          color: index % 2 == 0
+          color: isMe
               ? Theme.of(context).colorScheme.surface
               : Theme.of(context).colorScheme.primaryContainer,
           child: Padding(
@@ -39,25 +44,28 @@ class ChatMessageCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Message uhfvytkuf'),
+                  Text(messageItem.message!),
                   Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      index % 2 == 0
+                      isMe
                           ? const Icon(
                               Iconsax.tick_circle_copy,
                               size: 16,
                               color: Colors.blueAccent,
                             )
                           : const SizedBox(),
-                      Text(
-                        '04:03 pm',
-                        style: Theme.of(context).textTheme.labelSmall,
-                      ),
                       SizedBox(
                         width: 6.w,
                       ),
+                      Text(
+                        DateFormat.yMMMEd()
+                            .format(DateTime.fromMillisecondsSinceEpoch(
+                                int.parse(messageItem.createdAt!)))
+                            .toString(),
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
                     ],
-                    mainAxisSize: MainAxisSize.min,
                   ),
                 ],
               ),
