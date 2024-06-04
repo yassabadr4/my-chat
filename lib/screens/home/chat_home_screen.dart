@@ -1,3 +1,4 @@
+import 'package:chat_app_material3/firebase/fire_database.dart';
 import 'package:chat_app_material3/screens/chat/widgets/chat_card.dart';
 import 'package:chat_app_material3/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,16 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                     ),
                     SizedBox(height: 16.h,),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        if(emailController.text.isNotEmpty) {
+                          FireData().createRoom(emailController.text).then((value){
+                            setState(() {
+                              emailController.text= '';
+                            });
+                            Navigator.pop(context);
+                          });
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(16),
                         shape: RoundedRectangleBorder(
