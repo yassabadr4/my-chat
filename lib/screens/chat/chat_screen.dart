@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:chat_app_material3/firebase/fire_database.dart';
+import 'package:chat_app_material3/firebase/fire_storage.dart';
 import 'package:chat_app_material3/models/message_model.dart';
 import 'package:chat_app_material3/models/user_model.dart';
 import 'package:chat_app_material3/screens/chat/widgets/chat_message_card.dart';
@@ -55,45 +58,56 @@ class _ChatScreenState extends State<ChatScreen> {
                     if (snapshot.hasData) {
                       List<MessageModel> messageItems = snapshot.data!.docs
                           .map((e) => MessageModel.fromJson(e.data()))
-                          .toList()..sort((a, b) => b.createdAt!.compareTo(a.createdAt!),);
-                      return messageItems.isNotEmpty? ListView.builder(
-                        itemCount: messageItems.length,
-                        reverse: true,
-                        itemBuilder: (context, index) {
-                          return ChatMessageCard(
-                            messageItem: messageItems[index],
-                            index: index,
-                          );
-                        },
-                      ) :  Center(
-                        child: GestureDetector(
-                          onTap: (){
-                            FireData().sendMessage(widget.chatUser.id!, 'Hello 👋 ', widget.roomId);
-                          },
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '👋',
-                                    style: Theme.of(context).textTheme.displayMedium,
+                          .toList()
+                        ..sort(
+                          (a, b) => b.createdAt!.compareTo(a.createdAt!),
+                        );
+                      return messageItems.isNotEmpty
+                          ? ListView.builder(
+                              itemCount: messageItems.length,
+                              reverse: true,
+                              itemBuilder: (context, index) {
+                                return ChatMessageCard(
+                                  messageItem: messageItems[index],
+                                  index: index,
+                                );
+                              },
+                            )
+                          : Center(
+                              child: GestureDetector(
+                                onTap: () {
+                                  FireData().sendMessage(widget.chatUser.id!,
+                                      'Hello 👋 ', widget.roomId);
+                                },
+                                child: Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          '👋',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .displayMedium,
+                                        ),
+                                        SizedBox(
+                                          height: 16.h,
+                                        ),
+                                        Text(
+                                          'Say Hello',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge,
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  SizedBox(
-                                    height: 16.h,
-                                  ),
-                                  Text(
-                                    'Say Hello',
-                                    style: Theme.of(context).textTheme.bodyLarge,
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
-                      );
+                            );
                     }
                     return Container();
                   }),
@@ -116,11 +130,15 @@ class _ChatScreenState extends State<ChatScreen> {
                               ),
                             ),
                             IconButton(
-                              onPressed: () async{
+                              onPressed: () async {
                                 ImagePicker picker = ImagePicker();
-                                XFile? image = await picker.pickImage(source: ImageSource.gallery);
-                                if(image != null){
-                                  print(image.path);
+                                XFile? image = await picker.pickImage(
+                                    source: ImageSource.gallery);
+                                if (image != null) {
+                                  FireStorage().sendImage(
+                                      file: File(image.path),
+                                      roomId: widget.roomId,
+                                      uid: widget.chatUser.id!);
                                 }
                               },
                               icon: const Icon(

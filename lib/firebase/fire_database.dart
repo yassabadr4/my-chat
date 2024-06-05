@@ -40,7 +40,7 @@ class FireData {
     }
   }
 
-  Future sendMessage(String uid, String msg, String roomId)async {
+  Future sendMessage(String uid, String msg, String roomId, {String? type})async {
     String msgId = Uuid().v1();
     MessageModel messageModel = MessageModel(
       id: msgId,
@@ -49,7 +49,7 @@ class FireData {
       message: msg,
       createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
       read: '',
-      type: 'text',
+      type: type ?? 'text',
     );
     await firebaseFirestore
         .collection('rooms')
