@@ -1,5 +1,9 @@
+import 'package:chat_app_material3/firebase/fire_database.dart';
+import 'package:chat_app_material3/models/user_model.dart';
 import 'package:chat_app_material3/screens/contacts/contact_card.dart';
 import 'package:chat_app_material3/widgets/custom_text_field.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
@@ -16,6 +20,22 @@ class _ContactHomeScreenState extends State<ContactHomeScreen> {
   final TextEditingController searchController = TextEditingController();
 
   bool isSearch = false;
+  List myContacts = [];
+
+  // getMyContact() async {
+  //   final contact = await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(FirebaseAuth.instance.currentUser!.uid)
+  //       .get()
+  //       .then((value) => myContacts = value.data()!['my_users']);
+  //   print(myContacts);
+  // }
+  //
+  // @override
+  // void initState() {
+  //   getMyContact();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +48,15 @@ class _ContactHomeScreenState extends State<ContactHomeScreen> {
                     setState(() {
                       isSearch = false;
                     });
-                  }, icon: const Icon(Iconsax.close_circle_copy))
+                  },
+                  icon: const Icon(Iconsax.close_circle_copy))
               : IconButton(
                   onPressed: () {
                     setState(() {
                       isSearch = true;
                     });
-                  }, icon: const Icon(Iconsax.search_normal_1_copy))
+                  },
+                  icon: const Icon(Iconsax.search_normal_1_copy))
         ],
         title: isSearch
             ? Row(
@@ -88,7 +110,16 @@ class _ContactHomeScreenState extends State<ContactHomeScreen> {
                       height: 16.h,
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        FireData()
+                            .addContact(contactController.text)
+                            .then((value) {
+                          setState(() {
+                            contactController.text = '';
+                          });
+                          Navigator.pop(context);
+                        });
+                      },
                       style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.all(16),
                           shape: RoundedRectangleBorder(
@@ -112,12 +143,38 @@ class _ContactHomeScreenState extends State<ContactHomeScreen> {
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return const ContactCard();
-                },
-              ),
+              child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      myContacts = snapshot.data!.data()!['my_users'];
+                      return StreamBuilder(
+                        stream:FirebaseFirestore.instance
+                          .collection('users')
+                          .where('id', whereIn: myContacts.isEmpty ?[''] : myContacts)
+                          .snapshots(),
+                        builder: (context, snapshot) {
+                          if(snapshot.hasData){
+                            final List<ChatUser> items = snapshot.data!.docs
+                                .map((e) => ChatUser.fromJson(e.data()))
+                                .toList();
+                            return ListView.builder(
+                              itemCount: items.length,
+                              itemBuilder: (context, index) {
+                                return const ContactCard();
+                              },
+                            );
+                          }else{
+                            return Container();
+                          }
+                        }
+                      );
+                    } else {
+                      return Container();
+                    }
+                  }),
             ),
           ],
         ),

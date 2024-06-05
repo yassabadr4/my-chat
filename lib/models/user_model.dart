@@ -16,6 +16,7 @@ class ChatUser {
   String? about;
   String? image;
   bool? online;
+  List? myUsers;
 
   ChatUser({
     required this.id,
@@ -27,6 +28,7 @@ class ChatUser {
     required this.about,
     required this.image,
     required this.online,
+    required this.myUsers,
   });
 
   factory ChatUser.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,7 @@ class ChatUser {
       about: json['about'],
       image: json['image'],
       online: json['online'],
+      myUsers: json['my_users']
     );
   }
 
@@ -54,6 +57,7 @@ class ChatUser {
       'about' : about,
       'image' : image,
       'online' : online,
+      'my_users' : myUsers,
     };
  }
 }

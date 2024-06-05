@@ -19,6 +19,7 @@ class FireAuth {
       about: 'Hello i\'m User on the Chat',
       image: '',
       online: false,
+      myUsers: [],
     );
     await firebaseFirestore
         .collection('users')

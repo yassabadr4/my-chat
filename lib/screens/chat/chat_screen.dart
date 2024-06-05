@@ -7,6 +7,7 @@ import 'package:chat_app_material3/models/user_model.dart';
 import 'package:chat_app_material3/screens/chat/widgets/chat_message_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,6 +24,8 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController messageController = TextEditingController();
+  List<String> selectedMessage = [];
+  List<String> copyMessages = [];
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +42,29 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Iconsax.trash_copy)),
-          IconButton(onPressed: () {}, icon: const Icon(Iconsax.copy_copy)),
+          selectedMessage.isNotEmpty
+              ? IconButton(
+                  onPressed: () {
+                    FireData().deleteMessage(widget.roomId, selectedMessage);
+                    setState(() {
+                      selectedMessage.clear();
+                      copyMessages.clear();
+                    });
+                  },
+                  icon: const Icon(Iconsax.trash_copy),
+                )
+              : Container(),
+          copyMessages.isNotEmpty
+              ? IconButton(
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: copyMessages.join('\n')));
+                   setState(() {
+                     copyMessages.clear();
+                     selectedMessage.clear();
+                   });
+                  },
+                  icon: const Icon(Iconsax.copy_copy))
+              : Container(),
         ],
       ),
       body: Padding(
@@ -67,9 +91,60 @@ class _ChatScreenState extends State<ChatScreen> {
                               itemCount: messageItems.length,
                               reverse: true,
                               itemBuilder: (context, index) {
-                                return ChatMessageCard(
-                                  messageItem: messageItems[index],
-                                  index: index,
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedMessage.isNotEmpty
+                                          ? selectedMessage.contains(
+                                                  messageItems[index].id)
+                                              ? selectedMessage.remove(
+                                                  messageItems[index].id)
+                                              : selectedMessage
+                                                  .add(messageItems[index].id!)
+                                          : null;
+                                      copyMessages.isNotEmpty
+                                          ? messageItems[index].type == 'text'
+                                              ? copyMessages.contains(
+                                                      messageItems[index]
+                                                          .message)
+                                                  ? copyMessages.remove(
+                                                      messageItems[index]
+                                                          .message!)
+                                                  : copyMessages.add(
+                                                      messageItems[index]
+                                                          .message!)
+                                              : null
+                                          : null;
+                                      print(copyMessages);
+                                    });
+                                  },
+                                  onLongPress: () {
+                                    setState(() {
+                                      selectedMessage
+                                              .contains(messageItems[index].id)
+                                          ? selectedMessage
+                                              .remove(messageItems[index].id)
+                                          : selectedMessage
+                                              .add(messageItems[index].id!);
+                                      messageItems[index].type == 'text'
+                                          ? copyMessages.contains(
+                                                  messageItems[index].message)
+                                              ? copyMessages.remove(
+                                                  messageItems[index].message!)
+                                              : copyMessages.add(
+                                                  messageItems[index].message!)
+                                          : null;
+
+                                      print(copyMessages);
+                                    });
+                                  },
+                                  child: ChatMessageCard(
+                                    isSelect: selectedMessage
+                                        .contains(messageItems[index].id),
+                                    roomId: widget.roomId,
+                                    messageItem: messageItems[index],
+                                    index: index,
+                                  ),
                                 );
                               },
                             )
