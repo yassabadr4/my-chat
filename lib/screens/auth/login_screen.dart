@@ -1,6 +1,4 @@
-import 'package:chat_app_material3/firebase/fire_auth.dart';
 import 'package:chat_app_material3/screens/auth/forget_password_screen.dart';
-import 'package:chat_app_material3/screens/auth/setup_profile.dart';
 import 'package:chat_app_material3/utils/colors.dart';
 import 'package:chat_app_material3/widgets/custom_text_field.dart';
 import 'package:chat_app_material3/widgets/logo.dart';
@@ -118,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: 16,
+                      height: 16.h,
                     ),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(

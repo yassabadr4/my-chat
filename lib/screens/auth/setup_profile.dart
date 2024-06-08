@@ -1,5 +1,4 @@
 import 'package:chat_app_material3/firebase/fire_auth.dart';
-import 'package:chat_app_material3/screens/auth/login_screen.dart';
 import 'package:chat_app_material3/utils/colors.dart';
 import 'package:chat_app_material3/widgets/custom_text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';

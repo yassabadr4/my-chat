@@ -18,9 +18,9 @@ class ChatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String userId = item.members!
-        .where((element) => element != FirebaseAuth.instance.currentUser!.uid)
-        .first;
+    List members = item.members!
+        .where((element) => element != FirebaseAuth.instance.currentUser!.uid).toList();
+    String userId = members.isEmpty ?  FirebaseAuth.instance.currentUser!.uid : members.first;
     return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('users')

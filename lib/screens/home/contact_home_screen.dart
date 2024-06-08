@@ -47,6 +47,7 @@ class _ContactHomeScreenState extends State<ContactHomeScreen> {
                   onPressed: () {
                     setState(() {
                       isSearch = false;
+                      searchController.text = '';
                     });
                   },
                   icon: const Icon(Iconsax.close_circle_copy))
@@ -63,6 +64,11 @@ class _ContactHomeScreenState extends State<ContactHomeScreen> {
                 children: [
                   Expanded(
                     child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          searchController.text = value;
+                        });
+                      },
                       autofocus: true,
                       controller: searchController,
                       decoration: const InputDecoration(
@@ -117,6 +123,7 @@ class _ContactHomeScreenState extends State<ContactHomeScreen> {
                           setState(() {
                             contactController.text = '';
                           });
+
                           Navigator.pop(context);
                         });
                       },
@@ -145,32 +152,43 @@ class _ContactHomeScreenState extends State<ContactHomeScreen> {
             Expanded(
               child: StreamBuilder(
                   stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
+                      .collection('users')
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       myContacts = snapshot.data!.data()!['my_users'];
                       return StreamBuilder(
-                        stream:FirebaseFirestore.instance
-                          .collection('users')
-                          .where('id', whereIn: myContacts.isEmpty ?[''] : myContacts)
-                          .snapshots(),
-                        builder: (context, snapshot) {
-                          if(snapshot.hasData){
-                            final List<ChatUser> items = snapshot.data!.docs
-                                .map((e) => ChatUser.fromJson(e.data()))
-                                .toList();
-                            return ListView.builder(
-                              itemCount: items.length,
-                              itemBuilder: (context, index) {
-                                return const ContactCard();
-                              },
-                            );
-                          }else{
-                            return Container();
-                          }
-                        }
-                      );
+                          stream: FirebaseFirestore.instance
+                              .collection('users')
+                              .where('id',
+                                  whereIn:
+                                      myContacts.isEmpty ? [''] : myContacts)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              final List<ChatUser> items = snapshot.data!.docs
+                                  .map((e) => ChatUser.fromJson(e.data()))
+                                  .where((element) => element.name!
+                                      .toLowerCase()
+                                      .startsWith(
+                                          searchController.text.toLowerCase()))
+                                  .toList()
+                                ..sort(
+                                  (a, b) => a.name!.compareTo(b.name!),
+                                );
+                              return ListView.builder(
+                                itemCount: items.length,
+                                itemBuilder: (context, index) {
+                                  return ContactCard(
+                                    user: items[index],
+                                  );
+                                },
+                              );
+                            } else {
+                              return Container();
+                            }
+                          });
                     } else {
                       return Container();
                     }
