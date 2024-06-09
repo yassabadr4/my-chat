@@ -10,6 +10,7 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 class CreateGroup extends StatefulWidget {
   const CreateGroup({super.key});
 
+
   @override
   State<CreateGroup> createState() => _CreateGroupState();
 }
@@ -85,11 +86,11 @@ class _CreateGroupState extends State<CreateGroup> {
             SizedBox(
               height: 16.h,
             ),
-            const Row(
+             Row(
               children: [
                 Text('Member'),
                 Spacer(),
-                Text('0'),
+                Text(members.length.toString()),
               ],
             ),
             SizedBox(

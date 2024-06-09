@@ -55,7 +55,10 @@ class FireData {
       lastMessage: '',
       lastMessageTime: now,
     );
-    await firebaseFirestore.collection('groups').doc(gId).set(chatGroup.toJson());
+    await firebaseFirestore
+        .collection('groups')
+        .doc(gId)
+        .set(chatGroup.toJson());
   }
 
   Future addContact(String email) async {
@@ -90,7 +93,31 @@ class FireData {
         .doc(msgId)
         .set(messageModel.toJson());
 
-    firebaseFirestore.collection('rooms').doc(roomId).update({
+    await firebaseFirestore.collection('rooms').doc(roomId).update({
+      'last_message': type ?? msg,
+      'last_message_time': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+  }
+
+  Future sendGroupMessage(String msg, String groupId, {String? type}) async {
+    String msgId = const Uuid().v1();
+    MessageModel messageModel = MessageModel(
+      id: msgId,
+      toId: '',
+      fromId: myUserId,
+      message: msg,
+      createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
+      read: '',
+      type: type ?? 'text',
+    );
+    await firebaseFirestore
+        .collection('groups')
+        .doc(groupId)
+        .collection('messages')
+        .doc(msgId)
+        .set(messageModel.toJson());
+
+    await firebaseFirestore.collection('groups').doc(groupId).update({
       'last_message': type ?? msg,
       'last_message_time': DateTime.now().millisecondsSinceEpoch.toString(),
     });
@@ -123,5 +150,28 @@ class FireData {
             .delete();
       }
     }
+  }
+
+  Future editGroup(String gId, String name, List members) async {
+    await firebaseFirestore
+        .collection('groups')
+        .doc(gId)
+        .update({'name': name, 'members': FieldValue.arrayUnion(members)});
+  }
+
+  Future removeMember(String gId, String memberId) async {
+    await firebaseFirestore.collection('groups').doc(gId).update({
+      'members': FieldValue.arrayRemove([memberId])
+    });
+  }
+  Future promptAdmin(String gId, String memberId)async{
+    await firebaseFirestore.collection('groups').doc(gId).update({
+      'admins_id': FieldValue.arrayUnion([memberId])
+    });
+  }
+  Future removeAdmin(String gId, String memberId)async{
+    await firebaseFirestore.collection('groups').doc(gId).update({
+      'admins_id': FieldValue.arrayRemove([memberId])
+    });
   }
 }

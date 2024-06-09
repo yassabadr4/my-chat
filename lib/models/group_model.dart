@@ -4,14 +4,14 @@
 // /// 4 toJson
 
 class ChatGroup {
-  String? id;
-  String? name;
-  String? image;
-  List? members;
-  List? admin;
-  String? lastMessage;
-  String? lastMessageTime;
-  String? createdAt;
+  String id;
+  String name;
+  String image;
+  List members;
+  List admin;
+  String lastMessage;
+  String lastMessageTime;
+  String createdAt;
 
   ChatGroup({
     required this.id,

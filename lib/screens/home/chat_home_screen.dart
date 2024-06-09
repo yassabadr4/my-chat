@@ -73,7 +73,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
                           backgroundColor:
-                              Theme.of(context).colorScheme.primaryContainer),
+                          Theme.of(context).colorScheme.primaryContainer),
                       child: const Center(
                         child: Text('Create Chat'),
                       ),
@@ -98,7 +98,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                   stream: FirebaseFirestore.instance
                       .collection('rooms')
                       .where('members',
-                          arrayContains: FirebaseAuth.instance.currentUser!.uid)
+                      arrayContains: FirebaseAuth.instance.currentUser!.uid)
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
@@ -106,7 +106,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                           .map((e) => ChatRoom.fromJson(e.data()))
                           .toList()
                         ..sort(
-                          (a, b) =>
+                              (a, b) =>
                               b.lastMessageTime!.compareTo(a.lastMessageTime!),
                         );
                       return ListView.builder(
