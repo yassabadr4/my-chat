@@ -2,11 +2,11 @@ import 'package:chat_app_material3/models/message_model.dart';
 import 'package:chat_app_material3/models/room_model.dart';
 import 'package:chat_app_material3/models/user_model.dart';
 import 'package:chat_app_material3/screens/chat/chat_screen.dart';
+import 'package:chat_app_material3/utils/date_time.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 
 class ChatCard extends StatelessWidget {
   final ChatRoom item;
@@ -48,7 +48,10 @@ class ChatCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  leading: const CircleAvatar(),
+                  leading: chatUser.image == '' ? const CircleAvatar(
+                  ) : CircleAvatar(
+                    backgroundImage: NetworkImage(chatUser.image!),
+                  ),
                   trailing: StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection('rooms')
@@ -72,9 +75,7 @@ class ChatCard extends StatelessWidget {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 12),
                             )
-                          : Text(DateFormat.yMMMEd().format(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                  int.parse(item.lastMessageTime.toString()))).toString());
+                          : Text(MyDateTime.dateAndTime(item.lastMessageTime!).toString());
                     },
                   )),
             );

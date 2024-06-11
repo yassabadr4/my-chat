@@ -1,4 +1,3 @@
-import 'package:chat_app_material3/firebase/fire_auth.dart';
 import 'package:chat_app_material3/models/group_model.dart';
 import 'package:chat_app_material3/screens/group/create_group.dart';
 import 'package:chat_app_material3/screens/group/widgets/group_card.dart';

@@ -88,8 +88,8 @@ class _CreateGroupState extends State<CreateGroup> {
             ),
              Row(
               children: [
-                Text('Member'),
-                Spacer(),
+                const Text('Member'),
+                const Spacer(),
                 Text(members.length.toString()),
               ],
             ),
@@ -140,7 +140,7 @@ class _CreateGroupState extends State<CreateGroup> {
                                           } else {
                                             members.remove(items[index].id!);
                                           }
-                                          print(members);
+
                                         });
                                       },
                                     );

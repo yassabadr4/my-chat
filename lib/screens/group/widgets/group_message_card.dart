@@ -28,11 +28,7 @@ class GroupMessageCard extends StatelessWidget {
             mainAxisAlignment:
                 isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              isMe
-                  ? IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Iconsax.message_edit_copy))
-                  : const SizedBox(),
+
               Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
@@ -58,7 +54,7 @@ class GroupMessageCard extends StatelessWidget {
                                 style: Theme.of(context).textTheme.labelLarge,
                               )
                             : Container(),
-                        SizedBox(),
+                        const SizedBox(),
                         SizedBox(
                           height: 4.h,
                         ),

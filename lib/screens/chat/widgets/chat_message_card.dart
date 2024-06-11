@@ -1,23 +1,27 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app_material3/firebase/fire_database.dart';
 import 'package:chat_app_material3/models/message_model.dart';
+import 'package:chat_app_material3/utils/date_time.dart';
+import 'package:chat_app_material3/utils/photo_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
-import 'package:intl/intl.dart';
 
 class ChatMessageCard extends StatefulWidget {
   const ChatMessageCard({
     super.key,
     required this.index,
-    required this.messageItem, required this.roomId, required this.isSelect,
+    required this.messageItem,
+    required this.roomId,
+    required this.isSelect,
   });
 
   final int index;
   final MessageModel messageItem;
   final String roomId;
-final bool isSelect;
+  final bool isSelect;
+
   @override
   State<ChatMessageCard> createState() => _ChatMessageCardState();
 }
@@ -25,28 +29,28 @@ final bool isSelect;
 class _ChatMessageCardState extends State<ChatMessageCard> {
   @override
   void initState() {
-    if(widget.messageItem.toId == FirebaseAuth.instance.currentUser!.uid){
+    if (widget.messageItem.toId == FirebaseAuth.instance.currentUser!.uid) {
       FireData().readMessage(widget.roomId, widget.messageItem.id!);
     }
 
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-    bool isMe = widget.messageItem.fromId == FirebaseAuth.instance.currentUser!.uid;
+    bool isMe =
+        widget.messageItem.fromId == FirebaseAuth.instance.currentUser!.uid;
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 1),
+      margin: const EdgeInsets.symmetric(vertical: 1),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color:widget.isSelect ? Colors.grey : Colors.transparent,
+        borderRadius: BorderRadius.circular(12.r),
+        color: widget.isSelect ? Colors.grey : Colors.transparent,
       ),
       child: Row(
-        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          isMe
-              ? IconButton(
-                  onPressed: () {}, icon: const Icon(Iconsax.message_edit_copy))
-              : const SizedBox(),
+
           Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -66,34 +70,44 @@ class _ChatMessageCardState extends State<ChatMessageCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                 widget.messageItem.type == 'image' ?Container(
-                   height: 100.h,
-                   child: CachedNetworkImage(imageUrl: widget.messageItem.message!,
-                     placeholder: (context, url) {
-                       return Container(
-                         height: 100.h,
-                       );
-                     },
-                   ),
-                 ) :   Text(widget.messageItem.message!),
+                    widget.messageItem.type == 'image'
+                        ? GestureDetector(
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PhotoViewScreen(
+                                      image: widget.messageItem.message!),
+                                )),
+                            child: Container(
+                              height: 100.h,
+                              child: CachedNetworkImage(
+                                imageUrl: widget.messageItem.message!,
+                                placeholder: (context, url) {
+                                  return Container(
+                                    height: 100.h,
+                                  );
+                                },
+                              ),
+                            ),
+                          )
+                        : Text(widget.messageItem.message!),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         isMe
-                            ?  Icon(
+                            ? Icon(
                                 Iconsax.tick_circle_copy,
                                 size: 16,
-                                color:widget.messageItem.read == '' ? Colors.grey :Colors.blueAccent,
+                                color: widget.messageItem.read == ''
+                                    ? Colors.grey
+                                    : Colors.blueAccent,
                               )
                             : const SizedBox(),
                         SizedBox(
                           width: 6.w,
                         ),
                         Text(
-                          DateFormat.yMMMEd()
-                              .format(DateTime.fromMillisecondsSinceEpoch(
-                                  int.parse(widget.messageItem.createdAt!)))
-                              .toString(),
+                          MyDateTime.timeDate(widget.messageItem.createdAt!),
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ],

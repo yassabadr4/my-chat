@@ -24,7 +24,7 @@ class _GroupMemberState extends State<GroupMember> {
     String myId = FirebaseAuth.instance.currentUser!.uid;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Group Members'),
+        title: const Text('Group Members'),
         centerTitle: true,
         actions: [
           isAdmin
@@ -38,13 +38,13 @@ class _GroupMemberState extends State<GroupMember> {
                           ),
                         ));
                   },
-                  icon: Icon(Iconsax.user_edit_copy),
+                  icon: const Icon(Iconsax.user_edit_copy),
                 )
               : Container(),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             Expanded(
@@ -95,7 +95,7 @@ class _GroupMemberState extends State<GroupMember> {
                                             });
                                           },);
                                         },
-                                        icon: Icon(Iconsax.user_tick_copy),
+                                        icon: const Icon(Iconsax.user_tick_copy),
                                       )
                                     : Container(),
                                 isAdmin && myId != userList[index].id
@@ -113,7 +113,7 @@ class _GroupMemberState extends State<GroupMember> {
                                             },
                                           );
                                         },
-                                        icon: Icon(Iconsax.trash_copy),
+                                        icon: const Icon(Iconsax.trash_copy),
                                       )
                                     : Container(),
                               ],

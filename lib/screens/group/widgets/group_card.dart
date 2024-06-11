@@ -1,7 +1,6 @@
 import 'package:chat_app_material3/models/group_model.dart';
 import 'package:chat_app_material3/screens/group/group_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class GroupCard extends StatelessWidget {
   const GroupCard({
@@ -19,7 +18,7 @@ class GroupCard extends StatelessWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>  GroupScreen(chatGroup: chatGroup,),
+                builder: (context) =>  GroupScreen(chatGroup: chatGroup,roomId: chatGroup.id,),
               ));
         },
         title: Text(chatGroup.name),
@@ -30,9 +29,9 @@ class GroupCard extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        leading: CircleAvatar(
+        leading: chatGroup.image == '' ?  CircleAvatar(
           child: Text(chatGroup.name.characters.first),
-        ),
+        ) : CircleAvatar(backgroundImage: NetworkImage(chatGroup.image),),
         trailing: Text(chatGroup.lastMessageTime),
       ),
     );

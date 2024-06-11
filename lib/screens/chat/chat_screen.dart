@@ -5,6 +5,7 @@ import 'package:chat_app_material3/firebase/fire_storage.dart';
 import 'package:chat_app_material3/models/message_model.dart';
 import 'package:chat_app_material3/models/user_model.dart';
 import 'package:chat_app_material3/screens/chat/widgets/chat_message_card.dart';
+import 'package:chat_app_material3/utils/date_time.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,10 +36,23 @@ class _ChatScreenState extends State<ChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(widget.chatUser.name!),
-            Text(
-              widget.chatUser.lastActivated!,
-              style: Theme.of(context).textTheme.labelMedium,
-            )
+            StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(widget.chatUser.id)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                      snapshot.data!.data()!['online']
+                          ? 'Online'
+                          : 'last Seen ${MyDateTime.dateAndTime(widget.chatUser.lastActivated!)} at ${MyDateTime.timeDate(widget.chatUser.lastActivated!)}',
+                      style: Theme.of(context).textTheme.labelMedium,
+                    );
+                  } else {
+                    return Container();
+                  }
+                })
           ],
         ),
         actions: [
@@ -57,11 +71,12 @@ class _ChatScreenState extends State<ChatScreen> {
           copyMessages.isNotEmpty
               ? IconButton(
                   onPressed: () {
-                    Clipboard.setData(ClipboardData(text: copyMessages.join('\n')));
-                   setState(() {
-                     copyMessages.clear();
-                     selectedMessage.clear();
-                   });
+                    Clipboard.setData(
+                        ClipboardData(text: copyMessages.join('\n')));
+                    setState(() {
+                      copyMessages.clear();
+                      selectedMessage.clear();
+                    });
                   },
                   icon: const Icon(Iconsax.copy_copy))
               : Container(),
@@ -91,6 +106,27 @@ class _ChatScreenState extends State<ChatScreen> {
                               itemCount: messageItems.length,
                               reverse: true,
                               itemBuilder: (context, index) {
+                                String newDate = '';
+                                bool isSameDate = false;
+                                if ((index == 0 && messageItems.length == 1) || index == messageItems.length -1) {
+                                  newDate = MyDateTime.dateAndTime(
+                                      messageItems[index].createdAt.toString());
+                                }
+                                else{
+                                  final DateTime date = MyDateTime.dateFormat(
+                                      messageItems[index].createdAt.toString());
+                                  final DateTime prDate = MyDateTime.dateFormat(
+                                      messageItems[index + 1]
+                                          .createdAt
+                                          .toString());
+                                  isSameDate = date.isAtSameMomentAs(prDate);
+                                  newDate = isSameDate
+                                      ? ''
+                                      : MyDateTime.dateAndTime(messageItems[index]
+                                      .createdAt
+                                      .toString());
+
+                                }
                                 return GestureDetector(
                                   onTap: () {
                                     setState(() {
@@ -135,15 +171,23 @@ class _ChatScreenState extends State<ChatScreen> {
                                                   messageItems[index].message!)
                                           : null;
 
-                                      print(copyMessages);
+
                                     });
                                   },
-                                  child: ChatMessageCard(
-                                    isSelect: selectedMessage
-                                        .contains(messageItems[index].id),
-                                    roomId: widget.roomId,
-                                    messageItem: messageItems[index],
-                                    index: index,
+                                  child: Column(
+                                    children: [
+                                      if (newDate != '')
+                                        Center(
+                                          child: Text(newDate),
+                                        ),
+                                      ChatMessageCard(
+                                        isSelect: selectedMessage
+                                            .contains(messageItems[index].id),
+                                        roomId: widget.roomId,
+                                        messageItem: messageItems[index],
+                                        index: index,
+                                      ),
+                                    ],
                                   ),
                                 );
                               },
@@ -151,8 +195,12 @@ class _ChatScreenState extends State<ChatScreen> {
                           : Center(
                               child: GestureDetector(
                                 onTap: () {
-                                  FireData().sendMessage(widget.chatUser.id!,
-                                      'Hello 👋 ', widget.roomId);
+                                  FireData().sendMessage(
+                                      widget.chatUser.id!,
+                                      'Hello 👋 ',
+                                      widget.roomId,
+                                      widget.chatUser,
+                                      context);
                                 },
                                 child: Card(
                                   child: Padding(
@@ -213,6 +261,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                   FireStorage().sendImage(
                                       file: File(image.path),
                                       roomId: widget.roomId,
+                                      chatUser: widget.chatUser,
+                                      context: context,
                                       uid: widget.chatUser.id!);
                                 }
                               },
@@ -236,8 +286,12 @@ class _ChatScreenState extends State<ChatScreen> {
                     onPressed: () {
                       if (messageController.text.isNotEmpty) {
                         FireData()
-                            .sendMessage(widget.chatUser.id!,
-                                messageController.text, widget.roomId)
+                            .sendMessage(
+                                widget.chatUser.id!,
+                                messageController.text,
+                                widget.roomId,
+                                widget.chatUser,
+                                context)
                             .then((value) {
                           setState(() {
                             messageController.text = '';

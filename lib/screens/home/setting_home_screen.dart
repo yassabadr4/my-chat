@@ -1,3 +1,4 @@
+import 'package:chat_app_material3/provider/provider.dart';
 import 'package:chat_app_material3/screens/settings/profile.dart';
 import 'package:chat_app_material3/screens/settings/qr_code.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:provider/provider.dart';
 
 class SettingHomeScreen extends StatefulWidget {
   const SettingHomeScreen({super.key});
@@ -16,6 +18,7 @@ class SettingHomeScreen extends StatefulWidget {
 class _SettingHomeScreenState extends State<SettingHomeScreen> {
   @override
   Widget build(BuildContext context) {
+    final prov = Provider.of<ProviderApp>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -26,17 +29,20 @@ class _SettingHomeScreenState extends State<SettingHomeScreen> {
           child: Column(
             children: [
               ListTile(
-                leading: CircleAvatar(
+                leading: prov.me!.image == '' ?  CircleAvatar(
                   radius: 30.r,
+                ) : CircleAvatar(
+                  radius: 30.r,
+                  backgroundImage: NetworkImage(prov.me!.image!),
                 ),
                 minVerticalPadding: 40,
-                title: const Text('Name'),
+                title: Text(prov.me!.name.toString()),
                 trailing: IconButton(
                     onPressed: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => QrCode(),
+                            builder: (context) => const QrCode(),
                           ));
                     },
                     icon: const Icon(Iconsax.scan_barcode_copy)),
@@ -47,12 +53,12 @@ class _SettingHomeScreenState extends State<SettingHomeScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ProfileScreen(),
+                          builder: (context) => const ProfileScreen(),
                         ));
                   },
-                  title: Text('Profile'),
-                  leading: Icon(Iconsax.user_copy),
-                  trailing: Icon(Iconsax.arrow_right_3_copy),
+                  title: const Text('Profile'),
+                  leading: const Icon(Iconsax.user_copy),
+                  trailing: const Icon(Iconsax.arrow_right_3_copy),
                 ),
               ),
               Card(
@@ -64,8 +70,11 @@ class _SettingHomeScreenState extends State<SettingHomeScreen> {
                         return AlertDialog(
                           content: SingleChildScrollView(
                             child: BlockPicker(
-                              pickerColor: Colors.green,
-                              onColorChanged: (value) {},
+                              pickerColor: Color(prov.mainColor),
+                              onColorChanged: (value) {
+                                print(value.value.toRadixString(16));
+                                prov.changeColor(value.value);
+                              },
                             ),
                           ),
                           actions: [
@@ -73,21 +82,25 @@ class _SettingHomeScreenState extends State<SettingHomeScreen> {
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
-                                child: Text('Done'))
+                                child: const Text('Done'))
                           ],
                         );
                       },
                     );
                   },
-                  title: Text('Theme'),
-                  leading: Icon(Iconsax.colorfilter_copy),
+                  title: const Text('Theme'),
+                  leading: const Icon(Iconsax.colorfilter_copy),
                 ),
               ),
               Card(
                 child: ListTile(
                   title: const Text('Dark Mode'),
                   leading: const Icon(Iconsax.user_copy),
-                  trailing: Switch(value: true, onChanged: (value) {}),
+                  trailing: Switch(
+                      value: prov.themeMode == ThemeMode.dark,
+                      onChanged: (value) {
+                        prov.changeMode(value);
+                      }),
                 ),
               ),
               Card(
@@ -95,8 +108,8 @@ class _SettingHomeScreenState extends State<SettingHomeScreen> {
                   onTap: () async {
                     await FirebaseAuth.instance.signOut();
                   },
-                  title: Text('Sign-Out'),
-                  trailing: Icon(Iconsax.logout_1_copy),
+                  title: const Text('Sign-Out'),
+                  trailing: const Icon(Iconsax.logout_1_copy),
                 ),
               ),
             ],

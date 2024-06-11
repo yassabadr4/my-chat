@@ -92,9 +92,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               print('login done')).onError(
                                 (error, stackTrace) =>
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
+                                  const SnackBar(
                                     content: Text(
-                                      error.toString(),
+                                      'Check Email and Password'
                                     ),
                                   ),
                                 ),

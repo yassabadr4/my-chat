@@ -1,3 +1,4 @@
+
 import 'package:chat_app_material3/firebase/fire_database.dart';
 import 'package:chat_app_material3/models/group_model.dart';
 import 'package:chat_app_material3/models/user_model.dart';
@@ -56,24 +57,10 @@ class _GroupEditState extends State<GroupEdit> {
           children: [
             Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
                   child: Stack(
                     clipBehavior: Clip.none,
-                    children: [
-                      CircleAvatar(
-                        radius: 40.r,
-                      ),
-                      Positioned(
-                        bottom: -20,
-                        right: -20,
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: IconButton.outlined(
-                              onPressed: () {}, icon: Icon(Iconsax.edit_copy)),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
                 SizedBox(
@@ -95,8 +82,8 @@ class _GroupEditState extends State<GroupEdit> {
             ),
              Row(
               children: [
-                Text('Add Member'),
-                Spacer(),
+                const Text('Add Member'),
+                const Spacer(),
                 Text(members.length.toString()),
               ],
             ),
@@ -151,7 +138,7 @@ class _GroupEditState extends State<GroupEdit> {
                                           } else {
                                             members.remove(items[index].id!);
                                           }
-                                          print(members);
+
                                         });
                                       },
                                     );

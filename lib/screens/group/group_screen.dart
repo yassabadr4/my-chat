@@ -10,8 +10,9 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 
 class GroupScreen extends StatefulWidget {
   final ChatGroup chatGroup;
+  final String roomId;
 
-  const GroupScreen({super.key, required this.chatGroup});
+  const GroupScreen({super.key, required this.chatGroup, required this.roomId, });
 
   @override
   State<GroupScreen> createState() => _GroupScreenState();
@@ -90,7 +91,7 @@ class _GroupScreenState extends State<GroupScreen> {
                           child: GestureDetector(
                             onTap: () {
                               FireData().sendGroupMessage(
-                                  'Hello 👋', widget.chatGroup.id);
+                                  'Hello 👋', widget.chatGroup.id,context,widget.chatGroup);
                             },
                             child: Card(
                               child: Padding(
@@ -142,27 +143,9 @@ class _GroupScreenState extends State<GroupScreen> {
                   child: Card(
                     child: TextField(
                       controller: msgController,
-                      decoration: InputDecoration(
-                        suffixIcon: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Iconsax.emoji_happy_copy,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Iconsax.camera_copy,
-                              ),
-                            ),
-                          ],
-                        ),
+                      decoration: const InputDecoration(
                         hintText: 'Message',
-                        contentPadding: const EdgeInsets.symmetric(
+                        contentPadding: EdgeInsets.symmetric(
                             horizontal: 16, vertical: 10),
                         border: InputBorder.none,
                       ),
@@ -176,7 +159,7 @@ class _GroupScreenState extends State<GroupScreen> {
                       if (msgController.text.isNotEmpty) {
                         FireData()
                             .sendGroupMessage(
-                                msgController.text, widget.chatGroup.id)
+                                msgController.text, widget.chatGroup.id, context, widget.chatGroup)
                             .then(
                           (value) {
                             setState(() {

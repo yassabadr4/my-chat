@@ -26,7 +26,25 @@ class FireAuth {
         .doc(user.uid)
         .set(chatUser.toJson());
   }
+
+  Future updateToken(String token) async {
+    await firebaseFirestore
+        .collection('users')
+        .doc(user.uid)
+        .update({'push_token': token});
+  }
+
+  Future updateActivate(bool online)async{
+    firebaseFirestore.collection('users').doc(user.uid).update({
+      'online' : online,
+      'last_activated' : DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+  }
 }
+
+
+
+
 
 /// class
 /// firebase auth

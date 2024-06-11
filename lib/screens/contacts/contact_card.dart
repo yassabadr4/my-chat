@@ -17,7 +17,9 @@ class ContactCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: CircleAvatar(),
+        leading:user.image == '' ? const CircleAvatar() : CircleAvatar(
+          backgroundImage: NetworkImage(user.image!),
+        ),
         title: Text(user.name!),
         subtitle: Text(
           user.about!,
